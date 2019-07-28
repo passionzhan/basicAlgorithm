@@ -1,2 +1,2 @@
-# sortalgorithm
-经典排序算法pyhotn实现
+# basicAlgorithm
+基础算法、 数据结构python实现。
