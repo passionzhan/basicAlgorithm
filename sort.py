@@ -5,7 +5,7 @@ by zhan 2018/11/29
 
 
 import random
-
+import timeit
 
 def bubbleSort(listA):
     '''
@@ -153,14 +153,109 @@ def quickSort(listA, start=0, end=None):
     return listA
 
 
+def heapSort(listA,):
+    '''
+    堆排序，自己实现，建堆过程不完整，只把最大/最小值移到了根节点
+    :param listA:
+    :return:
+    '''
+    # 完全二叉树叶子结点树 < 总结点数的/2
+    def buildminheap(A,offset=0):
+        if offset == len(A) - 1:
+            return A
+
+        # 从叶子结点开始递归向上，把最小值移动到根节点
+        addNode = False
+        tmpV = float('inf')
+        if len(A[offset:]) % 2 == 0:
+            A.append(tmpV)
+            addNode = True
+
+        endIdx = (len(A) - offset - 2) // 2  + offset
+        for i in range(len(A)-1,endIdx - 1 ,-2):
+            minV = A[i]
+            minIdx = i
+            parentIdx = (i - offset - 1) // 2 + offset
+            while parentIdx >= offset:
+                left = (parentIdx - offset) * 2  + 1 + offset
+                right = (parentIdx - offset) * 2  + 2 + offset
+                if A[left] < minV:
+                    minV = A[left]
+                    minIdx = left
+                if A[right] < minV:
+                    minV = A[right]
+                    minIdx = right
+                if A[parentIdx] > minV:
+                    A[parentIdx], A[minIdx] = A[minIdx], A[parentIdx]
+                    minIdx = parentIdx
+                parentIdx = (parentIdx - offset - 1) // 2 + offset
+
+        if addNode:
+            A.pop()
+        # print(A[offset:])
+
+        return A
+
+    if len(listA) <=1:
+        return listA
+
+    for i in range(len(listA)):
+        buildminheap(listA,i)
+
+    return listA
+
+
+def heapSort2(listA):
+    '''
+    堆排序，标准实现
+    :param listA:
+    :return:
+    '''
+    def heapify(A, rootIdx=0, end=None):
+        if end is None:
+            end = len(A) - 1
+
+        if rootIdx < end:
+            maxV = A[rootIdx]
+            maxIdx = rootIdx
+            left = 2 * rootIdx + 1
+            right = 2 * rootIdx + 2
+
+            if left <= end and A[left] > maxV:
+                maxV = A[left]
+                maxIdx = left
+            if right <= end and A[right] > maxV:
+                maxV = A[right]
+                maxIdx = right
+
+            if A[rootIdx] < maxV:
+                A[rootIdx] , A[maxIdx] = A[maxIdx], A[rootIdx]
+                heapify(A,maxIdx,end)
+
+        return A
+
+    if len(listA) <= 1:
+        return listA
+
+    # 从非叶子点倒序开始调整
+    for i in range(len(listA) // 2 - 1,-1,-1):
+        heapify(listA,i)
+
+    for i in range(0,len(listA)-1):
+        listA[0], listA[len(listA)-1-i] = listA[len(listA)-1-i] ,listA[0]
+        heapify(listA,0,len(listA)-1-i-1)
+
+    return listA
+
 if __name__ == '__main__':
-    listA = [43, 61, 8, 3, 1, 43, 21, 32, 49, 23, 9, 33, 2, 5, 82, 14, 17, 1]
-    listA = [random.randint(0, 500) for i in range(17)]
-    listA = [i for i in range(17)]
-    listA = [-i for i in range(17)]
-    listA = []
-    listA = [4, ]
-    listA = [4, 0.9]
+    # listA = [43, 61, 8, 3, 1, 43, 21, 32, 49, 23, 9, 33, 2, 5, 82, 14, 17, 1]
+    random.seed(111)
+    listA = [random.randint(0, 1000) for i in range(23)]
+    # listA = [i for i in range(17)]
+    # listA = [-i for i in range(17)]
+    # listA = []
+    # listA = [4, ]
+    # listA = [4, 0.9]
     print(listA)
 
     # region 冒泡排序
@@ -188,13 +283,36 @@ if __name__ == '__main__':
     # endregion
 
     # region 归并排序
-    print('start merge sort...')
-    print(mergeSort(listA))
-    print('merge sort finish')
+    # print('start merge sort...')
+    # print(mergeSort(listA))
+    # print('merge sort finish')
     # endregion
 
     # region quick sort
     # print('start quick sort...')
     # print(quickSort(listA,)
     # print('quick sort finish!')
+    # endregion
+
+
+    # region 堆排序
+    print('start heap sort...')
+    print(heapSort(listA))
+    # t1 = timeit.timeit('heapSort(listA)',
+    #                    'import random; from __main__ import heapSort; random.seed(23);listA = [random.randint(0, 100000) for i in range(1000)]',
+    #                    number=100, )
+    # print(t1)
+    print('heap sort finish')
+    #
+
+    random.seed(111)
+    listA = [random.randint(0, 1000) for i in range(23)]
+    print(listA)
+    print('start heapSort_2 sort...')
+    print(heapSort2(listA))
+    # t2 = timeit.timeit('heapSort2(listA)',
+    #                    'import random; from __main__ import heapSort2; random.seed(23);listA = [random.randint(0, 100000) for i in range(1000)]',
+    #                    number=100,)
+    # print(t2)
+    print('heap sort finish')
     # endregion
